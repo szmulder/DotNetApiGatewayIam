@@ -1,4 +1,6 @@
-﻿using DotNetApiGatewayIam;
+﻿using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+using DotNetApiGatewayIam;
 using System;
 
 namespace TestConsoleApp
@@ -8,19 +10,24 @@ namespace TestConsoleApp
         static void Main(string[] args)
         {
             Console.WriteLine("Start");
-
-            var request = new AwsApiGatewayRequest()
+            var chain = new CredentialProfileStoreChain();
+            var awsCredentials = default(AWSCredentials);
+            if (chain.TryGetAWSCredentials("default", out awsCredentials))
             {
-                RegionName = "ap-southeast-2",
-                Host = "ApiGateway-url",
-                AccessKey = "Your-AccessKey",
-                SecretKey = "Your-SecretKey",
-                AbsolutePath = "Segments",
-                JsonData = "data",
-                RequestMethod = "POST"
-            };
-            var apiRequest = new ApiRequest(request);
-            var response = apiRequest.GetPostResponse();
+                var request = new AwsApiGatewayRequest()
+                {
+                    RegionName = "ap-southeast-2",
+                    Host = "ApiGateway-url",
+                    AccessKey = awsCredentials.GetCredentials().AccessKey,
+                    SecretKey = awsCredentials.GetCredentials().SecretKey,
+                    AbsolutePath = "Segments",
+                    JsonData = "data",
+                    RequestMethod = "POST"
+                };
+                var apiRequest = new ApiRequest(request);
+                var response = apiRequest.GetPostResponse();
+            }
+            
 
             Console.WriteLine("End");
             Console.ReadLine();
