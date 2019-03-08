@@ -1,11 +1,16 @@
-﻿using Amazon.Runtime;
+﻿using Amazon;
+using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
+using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.SecurityToken;
+using Amazon.SecurityToken.Model;
 using Amazon.Util;
 using DotNetApiGatewayIam;
 using Newtonsoft.Json;
 using System;
 
-namespace TestConsoleApp
+namespace TestConsoleApp4
 {
     class Program
     {
@@ -16,12 +21,13 @@ namespace TestConsoleApp
         {
             Console.WriteLine("Start");
 
-            LocalProfileTest();
             //Ec2IamTest();
+            LocalProfileTest();
 
             Console.WriteLine("End");
             Console.ReadLine();
         }
+
 
         private static void Ec2IamTest()
         {
@@ -30,6 +36,7 @@ namespace TestConsoleApp
             var iamCredentials = JsonConvert.DeserializeObject<IamRoleCredentials>(iamRole);
 
             Console.WriteLine(iamCredentials.AccessKeyId);
+            Console.WriteLine(iamCredentials.Token);
 
             var request = new AwsApiGatewayRequest()
             {
@@ -44,6 +51,8 @@ namespace TestConsoleApp
             };
             var apiRequest = new ApiRequest(request);
             var response = apiRequest.GetPostResponse();
+
+            Console.WriteLine(response.ContentLength);
         }
 
         private static void LocalProfileTest()
@@ -66,7 +75,41 @@ namespace TestConsoleApp
                 };
                 var apiRequest = new ApiRequest(request);
                 var response = apiRequest.GetPostResponse();
+
+                Console.WriteLine(response.ContentLength);
             }
+        }
+
+        public static Credentials GetTemporaryCredentials(string policy)
+        {
+            var config = new AmazonSecurityTokenServiceConfig
+            {
+                RegionEndpoint = RegionEndpoint.APSoutheast2
+            };
+            var client = new AmazonSecurityTokenServiceClient(config);
+            var iamClient = new AmazonIdentityManagementServiceClient(
+                RegionEndpoint.APSoutheast2);
+
+            var iamRoleName = EC2InstanceMetadata.GetData("/iam/security-credentials");
+            var role = iamClient.GetRole(
+                new GetRoleRequest() { RoleName = iamRoleName });
+            var assumeRoleRequest = new AssumeRoleRequest()
+            {
+                RoleArn = role.Role.Arn,
+                RoleSessionName = Guid.NewGuid().ToString().Replace("-", ""),
+                DurationSeconds = 900
+            };
+
+            if (!string.IsNullOrEmpty(policy))
+            {
+                assumeRoleRequest.Policy = policy;
+            }
+
+            var assumeRoleResponse =
+                         client.AssumeRole(assumeRoleRequest);
+            var credentials = assumeRoleResponse.Credentials;
+
+            return credentials;
         }
     }
 }

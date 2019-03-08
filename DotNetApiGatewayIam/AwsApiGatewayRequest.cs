@@ -14,6 +14,8 @@ namespace DotNetApiGatewayIam
 
         public string JsonData { get; set; }
 
+        public string SessionToken { get; set; }
+
         public string xApiKey { get; set; }
 
         public string AccessKey { get; set; }

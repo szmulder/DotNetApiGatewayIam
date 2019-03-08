@@ -50,6 +50,9 @@ namespace DotNetApiGatewayIam
             webRequest.Headers.Add("X-Amz-date", requestDate);
             webRequest.Headers.Add("Authorization", authorization);
             webRequest.Headers.Add("x-amz-content-sha256", hashedRequestPayload);
+
+            if(!string.IsNullOrEmpty(AwsApiGatewayRequest.SessionToken))
+                webRequest.Headers.Add("X-Amz-Security-Token", AwsApiGatewayRequest.SessionToken);
             webRequest.ContentLength = AwsApiGatewayRequest.JsonData.Length;
 
             var encoding = new ASCIIEncoding();
