@@ -25,5 +25,7 @@ namespace DotNetApiGatewayIam
         public string RequestMethod { get; set; }
 
         public int? RequestTimeout { get; set; }
+
+		public string AdditionalHeaders { get; set; }
     }
 }

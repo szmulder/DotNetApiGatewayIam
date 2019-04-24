@@ -51,7 +51,18 @@ namespace DotNetApiGatewayIam
             webRequest.Headers.Add("Authorization", authorization);
             webRequest.Headers.Add("x-amz-content-sha256", hashedRequestPayload);
 
-            if(!string.IsNullOrEmpty(AwsApiGatewayRequest.SessionToken))
+			if (!string.IsNullOrEmpty(AwsApiGatewayRequest.AdditionalHeaders))
+			{
+				// parse apart and apply the additional headers
+				string[] headers = AwsApiGatewayRequest.AdditionalHeaders.Split(';');
+				foreach (string header in headers)
+				{
+					var headervalue = header.Split('=');
+					webRequest.Headers.Add(headervalue[0], headervalue[1]);
+				}
+			}
+
+			if (!string.IsNullOrEmpty(AwsApiGatewayRequest.SessionToken))
                 webRequest.Headers.Add("X-Amz-Security-Token", AwsApiGatewayRequest.SessionToken);
             webRequest.ContentLength = AwsApiGatewayRequest.JsonData.Length;
 
