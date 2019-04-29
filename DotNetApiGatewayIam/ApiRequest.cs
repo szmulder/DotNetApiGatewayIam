@@ -58,7 +58,8 @@ namespace DotNetApiGatewayIam
 				foreach (string header in headers)
 				{
 					var headervalue = header.Split('=');
-					webRequest.Headers.Add(headervalue[0], headervalue[1]);
+					if (headervalue.Count() == 2)
+						webRequest.Headers.Add(headervalue[0], headervalue[1]);
 				}
 			}
 
