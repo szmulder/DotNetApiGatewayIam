@@ -72,6 +72,7 @@ namespace DotNetApiGatewayIam
 
             var newStream = webRequest.GetRequestStream();
             newStream.Write(data, 0, data.Length);
+			newStream.Close();
 
             return webRequest;
         }
