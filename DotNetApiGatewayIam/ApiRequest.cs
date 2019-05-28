@@ -70,10 +70,12 @@ namespace DotNetApiGatewayIam
             var encoding = new ASCIIEncoding();
             var data = encoding.GetBytes(AwsApiGatewayRequest.JsonData);
 
-            var newStream = webRequest.GetRequestStream();
-            newStream.Write(data, 0, data.Length);
-			newStream.Close();
-
+			using (var newStream = webRequest.GetRequestStream())
+			{
+				newStream.Write(data, 0, data.Length);
+				newStream.Close();
+			}
+				
             return webRequest;
         }
 
