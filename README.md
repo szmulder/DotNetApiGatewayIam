@@ -8,6 +8,8 @@ Making Request to API Gateway with IAM security with ASP.NET SDK
 See the TestConsoleApp. Project
 
 Or
+
+```c#
 var request = new AwsApiGatewayRequest()
 {
     RegionName = "ap-southeast-2",
@@ -19,9 +21,9 @@ var request = new AwsApiGatewayRequest()
 };
 var apiRequest = new ApiRequest(request);
 var response = apiRequest.GetPostResponse();
+```
 
 ### Modified OneTechnologies 
 
 This was forked from https://github.com/szmulder/DotNetApiGatewayIam and modified slightly to support additional headers on API call 
 which was necessary for AWS Kinesis write (replacement for Couchbase).
-
