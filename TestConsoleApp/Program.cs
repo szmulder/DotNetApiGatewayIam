@@ -28,6 +28,7 @@ namespace TestConsoleApp
             var iamRoleName = EC2InstanceMetadata.GetData("/iam/security-credentials");
             var iamRole = EC2InstanceMetadata.GetData($"/iam/security-credentials/{iamRoleName}");
             var iamCredentials = JsonConvert.DeserializeObject<IamRoleCredentials>(iamRole);
+			var iamAdditionalHeaders = "x-apigw-api-id='TEST';";
 
             Console.WriteLine(iamCredentials.AccessKeyId);
 
@@ -41,6 +42,7 @@ namespace TestConsoleApp
                 AbsolutePath = apiEndpointStaging,
                 JsonData = "245",
                 SessionToken = iamCredentials.Token,
+				AdditionalHeaders = iamAdditionalHeaders
             };
             var apiRequest = new ApiRequest(request);
             var response = apiRequest.GetPostResponse();
