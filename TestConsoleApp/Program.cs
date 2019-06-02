@@ -1,9 +1,12 @@
-﻿using Amazon.Runtime;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Text;
+using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Util;
 using DotNetApiGatewayIam;
 using Newtonsoft.Json;
-using System;
 
 namespace TestConsoleApp
 {
@@ -45,7 +48,14 @@ namespace TestConsoleApp
 				AdditionalHeaders = iamAdditionalHeaders
             };
             var apiRequest = new ApiRequest(request);
-            var response = apiRequest.GetPostResponse();
+            using (var response = (HttpWebResponse)apiRequest.GetPostResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    var reader = new StreamReader(stream, Encoding.UTF8);
+                    var result = reader.ReadToEnd();
+                }
+            }
         }
 
         private static void LocalProfileTest()
@@ -67,7 +77,14 @@ namespace TestConsoleApp
                     RequestMethod = "POST"
                 };
                 var apiRequest = new ApiRequest(request);
-                var response = apiRequest.GetPostResponse();
+                using (var response = (HttpWebResponse)apiRequest.GetPostResponse())
+                {
+                    using (var stream = response.GetResponseStream())
+                    {
+                        var reader = new StreamReader(stream, Encoding.UTF8);
+                        var result = reader.ReadToEnd();
+                    }
+                }
             }
         }
     }
