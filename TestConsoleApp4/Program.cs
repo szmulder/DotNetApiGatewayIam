@@ -9,6 +9,7 @@ using Amazon.Util;
 using DotNetApiGatewayIam;
 using Newtonsoft.Json;
 using System;
+using System.Net.Http;
 
 namespace TestConsoleApp4
 {
@@ -44,13 +45,13 @@ namespace TestConsoleApp4
                 Host = apiEndpoint,
                 AccessKey = iamCredentials.AccessKeyId,
                 SecretKey = iamCredentials.SecretAccessKey,
-                RequestMethod = "POST",
                 AbsolutePath = apiEndpointStaging,
                 JsonData = "245",
                 SessionToken = iamCredentials.Token,
+                RequestMethod = HttpMethod.Post
             };
             var apiRequest = new ApiRequest(request);
-            var response = apiRequest.GetPostResponse();
+            var response = apiRequest.GetResponse();
 
             Console.WriteLine(response.ContentLength);
         }
@@ -71,10 +72,10 @@ namespace TestConsoleApp4
                     SecretKey = aws.SecretKey,
                     AbsolutePath = apiEndpointStaging,
                     JsonData = "245",
-                    RequestMethod = "POST"
+                    RequestMethod = HttpMethod.Post
                 };
                 var apiRequest = new ApiRequest(request);
-                var response = apiRequest.GetPostResponse();
+                var response = apiRequest.GetResponse();
 
                 Console.WriteLine(response.ContentLength);
             }

@@ -1,91 +1,46 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Text;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
-using Amazon.Util;
-using DotNetApiGatewayIam;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TestConsoleApp
 {
     class Program
     {
-        private const string apiEndpoint = "test.execute-api.ap-southeast-2.amazonaws.com";
-        private const string apiEndpointStaging = "/Dev/test";
-
         static void Main(string[] args)
         {
             Console.WriteLine("Start");
 
-            LocalProfileTest();
-            //Ec2IamTest();
+            // create service collection
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+
+            // create service provider
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            // entry to run app
+            serviceProvider.GetService<AppStart>().Run().Wait();
 
             Console.WriteLine("End");
             Console.ReadLine();
         }
 
-        private static void Ec2IamTest()
+        private static void ConfigureServices(IServiceCollection serviceCollection)
         {
-            var iamRoleName = EC2InstanceMetadata.GetData("/iam/security-credentials");
-            var iamRole = EC2InstanceMetadata.GetData($"/iam/security-credentials/{iamRoleName}");
-            var iamCredentials = JsonConvert.DeserializeObject<IamRoleCredentials>(iamRole);
-			var iamAdditionalHeaders = "x-apigw-api-id='TEST';";
+            var defaultsettingFile = "appsettings.json";
 
-            Console.WriteLine(iamCredentials.AccessKeyId);
+            // build system configuration
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(defaultsettingFile, false)
+                .Build();
+            serviceCollection.Configure<AppSettings>(configuration.GetSection("Configuration"));
 
-            var request = new AwsApiGatewayRequest()
-            {
-                RegionName = "ap-southeast-2",
-                Host = apiEndpoint,
-                AccessKey = iamCredentials.AccessKeyId,
-                SecretKey = iamCredentials.SecretAccessKey,
-                RequestMethod = "POST",
-                AbsolutePath = apiEndpointStaging,
-                JsonData = "245",
-                SessionToken = iamCredentials.Token,
-				AdditionalHeaders = iamAdditionalHeaders
-            };
-            var apiRequest = new ApiRequest(request);
-            using (var response = (HttpWebResponse)apiRequest.GetPostResponse())
-            {
-                using (var stream = response.GetResponseStream())
-                {
-                    var reader = new StreamReader(stream, Encoding.UTF8);
-                    var result = reader.ReadToEnd();
-                }
-            }
-        }
+            //add services
+            serviceCollection.AddTransient<IApiTest, ApiTest>();
 
-        private static void LocalProfileTest()
-        {
-            var chain = new CredentialProfileStoreChain();
-            var awsCredentials = default(AWSCredentials);
-            if (chain.TryGetAWSCredentials("default", out awsCredentials))
-            {
-                var aws = awsCredentials.GetCredentials();
-
-                var request = new AwsApiGatewayRequest()
-                {
-                    RegionName = "ap-southeast-2",
-                    Host = apiEndpoint,
-                    AccessKey = aws.AccessKey,
-                    SecretKey = aws.SecretKey,
-                    AbsolutePath = apiEndpointStaging,
-                    JsonData = "245",
-                    RequestMethod = "POST"
-                };
-                var apiRequest = new ApiRequest(request);
-                using (var response = (HttpWebResponse)apiRequest.GetPostResponse())
-                {
-                    using (var stream = response.GetResponseStream())
-                    {
-                        var reader = new StreamReader(stream, Encoding.UTF8);
-                        var result = reader.ReadToEnd();
-                    }
-                }
-            }
+            // add app
+            serviceCollection.AddTransient<AppStart>();
         }
     }
 }
