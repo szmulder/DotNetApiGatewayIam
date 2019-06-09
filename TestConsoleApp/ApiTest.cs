@@ -1,15 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.Runtime;
+﻿using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Util;
 using DotNetApiGatewayIam;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace TestConsoleApp
 {
