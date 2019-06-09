@@ -4,8 +4,8 @@
     <id>DotNet.ApiGatewayIam</id>
     <version>1.1.0</version>
     <title>DotNet ApiGateway Iam with Core and Framework support</title>
-    <authors>NZMK.com</authors>
-    <owners>mulder</owners>
+    <authors>NZMK.com, fahadash.com</authors>
+    <owners>mulder, fahadash</owners>
     <licenseUrl>https://github.com/szmulder/DotNetApiGatewayIam</licenseUrl>
     <projectUrl>https://github.com/szmulder/DotNetApiGatewayIam</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

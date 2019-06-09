@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.5</Version>
+    <PackageId>DotNet.ApiGatewayIam</PackageId>
+    <Authors>szmulder</Authors>
+    <Company>NZMK.com</Company>
+    <Version>1.1.1</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="3.3.32.1" />
-  </ItemGroup>
 
 </Project>
