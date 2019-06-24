@@ -6,7 +6,7 @@ Making Request to API Gateway with IAM security with ASP.NET SDK
 
 ### How to use it
 See the TestConsoleApp. Project
-You just need change the value in the appsettings.json and you should able to do test on your local computer
+You just need change the value in the appsettings.json and you should able to do test from your local computer
 
 Or
 
